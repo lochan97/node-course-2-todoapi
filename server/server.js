@@ -20,8 +20,16 @@ var todo=new Todo({
 todo.save().then((doc)=>{
     res.send(doc);
 },
-(e)=>{res.status(400).send(e)});
+(e)=>{res.status(400).send(e);});
 });
+
+//getting todos
+app.get('/todos',(req,res)=>{
+    //passing back object back with todos:todos to send back other stuff in future like status code etc
+Todo.find().then((todos)=>{res.send({todos});},
+(e)=>{res.status(400).send(e);});
+});
+
 
 app.listen(3000,()=>{
     console.log('Started on port 3000');
