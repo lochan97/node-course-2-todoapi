@@ -4,9 +4,20 @@ const request=require('supertest');
 const {app}=require('./../server');
 const {Todo}=require('./../models/todos');
 
+//making an array of dummy todos to test the get
+const todos =[{
+    text:'First test todo'
+},{
+    text:'Second test todo'
+}]
+
+
 //using beforeEach to setup the database to be empty
+//modifying it to include the get stuff
 beforeEach((done)=>{
-    Todo.remove({}).then(()=>done());
+    Todo.remove({}).then(()=>{
+        Todo.insertMany(todos);
+    }).then(()=>done());
 });
 
 
@@ -32,7 +43,8 @@ describe('POST /todos',()=>{
               return done(err);
           }  
           //if no error, fetching the todos
-          Todo.find().then((todos)=>
+          //only finding todos where the text is same as above
+          Todo.find({text}).then((todos)=>
         {
           expect(todos.length).toBe(1);  
           expect(todos[0].text).toBe(text);
@@ -52,11 +64,21 @@ describe('POST /todos',()=>{
             if(err){
                 return done(err);
             }
-
             Todo.find().then((todos)=>{
-                expect(todos.length).toBe(0);
+                expect(todos.length).toBe(2);
                 done();
             }).catch((e)=>done(e));
         });
     });
 });
+
+describe('GET /todos',()=>{
+    it('Should get all todos',(done)=>{
+        request(app)
+        .get('/todos')
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.todos.length).toBe(2);
+        }).end(done);
+    })
+})
