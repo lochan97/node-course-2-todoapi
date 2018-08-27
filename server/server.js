@@ -48,7 +48,7 @@ Todo.findById(id).then((todo)=>
 }).catch((e)=>{res.status(400).send(e);});
 });
 
-
+//delete route
 app.delete('/todos/:id',(req,res)=>{
     var id=req.params.id;
     if(!ObjectID.isValid(id)){
